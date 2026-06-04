@@ -22,7 +22,7 @@ An orchestrator invokes this skill with either a `pr-diff` or a `file-path`. The
 
 ## Source
 
-Collect all knowledge files under `*/knowledge/ui/**/*.md`, across every enabled layer.
+Read the BCQuality knowledge index once — the `knowledge-index.json` the BCQuality filter emits at the root of the knowledge checkout. It lists every article that survived layer and allow/deny filtering and carries, per article, its `path`, `layer`, `domain`, frontmatter dimensions, `keywords`, `title`, and full `description` — exactly the fields Relevance and Worklist consume. Take the index entries whose `domain` is `ui` as this skill's candidate set across every enabled layer; do not open the individual article files at this step. Open an article's full body only once it enters the Worklist below, so a review reads the index plus the handful of worklisted articles instead of every file under `*/knowledge/ui/**`.
 
 ## Relevance
 
@@ -43,7 +43,7 @@ Narrow the relevant files to the subset that applies to the changes under review
 - For each relevant knowledge file, compute overlap against changed page declarations and control add-in UI files, weighted toward `Caption`, `ToolTip`, `AboutTitle`, `AboutText`, `OptionCaption`, `ShowCaption`, `InstructionalText`, `GridLayout`, `Style`, `StyleExpr`, action definitions, field-level properties, DOM creation, ARIA attributes, and keyboard/focus handlers.
 - Tokens extracted from the diff (`Caption`, `ToolTip`, `AboutTitle`, `AboutText`, `PageType`, `ShowCaption`, `InstructionalText`, `grid`, `fixed`, `GridLayout`, `Style`, `StyleExpr`, `Favorable`, `Unfavorable`, `Ambiguous`, `cuegroup`, `controladdin`, `usercontrol`, `aria-`, `tabindex`, `keydown`, `focus`, `innerHTML`, `createElement`, `&`, `Specifies`, `Message(`, `Confirm(`, `Error(` in a page context, `Disabled`, `Invalid`, `Whitelist`, `Blacklist`, trailing punctuation patterns on captions).
 
-A file enters the candidate worklist when its `keywords` intersect the extracted tokens or its topic matches a changed page element.
+A file enters the candidate worklist when its `keywords` intersect the extracted tokens or its topic (derived from the index entry's `path`, `title`, and `description`) matches a changed page element. Read an article's full file — its `## Best Practice` / `## Anti Pattern` bodies — only after it makes the worklist; candidate selection uses the index alone.
 
 Once the candidate worklist is known, resolve layer-precedence conflicts per READ and record suppressions.
 

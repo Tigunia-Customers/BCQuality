@@ -22,7 +22,7 @@ An orchestrator invokes this skill with either a `pr-diff` or a `file-path`. The
 
 ## Source
 
-Collect all knowledge files under `*/knowledge/style/**/*.md`, across every enabled layer.
+Read the BCQuality knowledge index once — the `knowledge-index.json` the BCQuality filter emits at the root of the knowledge checkout. It lists every article that survived layer and allow/deny filtering and carries, per article, its `path`, `layer`, `domain`, frontmatter dimensions, `keywords`, `title`, and full `description` — exactly the fields Relevance and Worklist consume. Take the index entries whose `domain` is `style` as this skill's candidate set across every enabled layer; do not open the individual article files at this step. Open an article's full body only once it enters the Worklist below, so a review reads the index plus the handful of worklisted articles instead of every file under `*/knowledge/style/**`.
 
 ## Relevance
 
@@ -43,7 +43,7 @@ Narrow the relevant files to the subset that applies to the changes under review
 - Changed declarations, weighted toward `: Label '...'`, `: TextConst '...'`, temporary record variables, option fields, error-handling call sites, and codeunit-internal method calls.
 - Tokens extracted from the diff (`Label`, `TextConst`, `Locked`, `Comment`, `MaxLength`, `temporary`, `OptionMembers`, `OptionCaption`, `APIPublisher`, `APIGroup`, `APIVersion`, `EntityName`, `EntitySetName`, `DelayedInsert`, `FieldCaption`, `TableCaption`, `FieldName`, `TableName`, `Page.RunModal`, `Report.Run`, `this.`, `StrSubstNo`).
 
-A file enters the candidate worklist when its `keywords` intersect the extracted tokens or its topic matches a changed object or declaration.
+A file enters the candidate worklist when its `keywords` intersect the extracted tokens or its topic (derived from the index entry's `path`, `title`, and `description`) matches a changed object or declaration. Read an article's full file — its `## Best Practice` / `## Anti Pattern` bodies — only after it makes the worklist; candidate selection uses the index alone.
 
 Once the candidate worklist is known, resolve layer-precedence conflicts per READ and record suppressions.
 
