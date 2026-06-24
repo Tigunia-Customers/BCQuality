@@ -1,9 +1,3 @@
-# ⚠️ Warning
-This project is under active development.  
-Large and potentially breaking changes are expected.
-
-**Public preview will soon be announced.**
-
 # BCQuality
 
 Quality skills and knowledge for Business Central development.
