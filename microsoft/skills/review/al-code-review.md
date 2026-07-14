@@ -22,6 +22,10 @@ sub-skills:
   - microsoft/skills/review/al-interfaces-review.md
   - microsoft/skills/review/al-breaking-changes-review.md
   - microsoft/skills/review/al-web-services-review.md
+  - microsoft/skills/review/al-testing-review.md
+  - microsoft/skills/review/al-data-modeling-review.md
+  - microsoft/skills/review/al-appsource-review.md
+  - microsoft/skills/review/al-telemetry-review.md
 ---
 
 # AL code review
@@ -34,7 +38,7 @@ An orchestrator invokes this skill with either a `pr-diff` (the standard PR-revi
 
 ## Source
 
-The sub-skills invoked by this skill are those listed in frontmatter `sub-skills`. Additional leaf skills (for example, telemetry, testing) are added by updating the `sub-skills` list. The skill does not discover sub-skills implicitly.
+The sub-skills invoked by this skill are those listed in frontmatter `sub-skills`. Additional leaf skills are added by updating the `sub-skills` list. The skill does not discover sub-skills implicitly.
 
 ## Relevance
 
@@ -127,36 +131,36 @@ Output conforms to the DO output contract, extended with `sub-results` and `skip
   },
   "findings": [
     {
-      "id": "microsoft/knowledge/performance/filter-before-find.md",
+      "id": "microsoft/knowledge/performance/apply-filters-before-iterating.md",
       "severity": "major",
-      "message": "FindSet is called on a record variable without any prior SetRange/SetFilter. This forces a full-table scan.",
+      "message": "The Country/Region Code predicate is evaluated inside the loop instead of with SetRange before FindSet, so every row crosses the database boundary.",
       "location": {
         "file": "src/Sales/PostingRoutines.Codeunit.al",
         "line": 140,
         "range": { "start-line": 140, "end-line": 144 }
       },
       "references": [
-        { "path": "microsoft/knowledge/performance/filter-before-find.md" }
+        { "path": "microsoft/knowledge/performance/apply-filters-before-iterating.md" }
       ],
       "confidence": "high",
       "from-sub-skill": "al-performance-review"
     },
     {
-      "id": "community/knowledge/performance/call-setloadfields-before-filters.md",
+      "id": "microsoft/knowledge/performance/use-setloadfields-for-partial-records.md",
       "severity": "minor",
-      "message": "SetLoadFields is called after SetRange. Per the referenced guidance the call must come before filters to be folded into the query plan.",
+      "message": "The loop reads only a small subset of fields from a wide table without SetLoadFields, transferring every column for each row.",
       "location": {
         "file": "src/Sales/PostingRoutines.Codeunit.al",
         "line": 152
       },
       "references": [
-        { "path": "community/knowledge/performance/call-setloadfields-before-filters.md" }
+        { "path": "microsoft/knowledge/performance/use-setloadfields-for-partial-records.md" }
       ],
       "confidence": "high",
       "from-sub-skill": "al-performance-review"
     },
     {
-      "id": "microsoft/knowledge/security/use-secrettext-for-credentials.md",
+      "id": "microsoft/knowledge/security/secrettext-for-credentials.md",
       "severity": "blocker",
       "message": "A bearer token is declared as a Text parameter and passed through the HTTP request path as plain text. The referenced guidance requires credentials to flow as SecretText end-to-end.",
       "location": {
@@ -165,21 +169,21 @@ Output conforms to the DO output contract, extended with `sub-results` and `skip
         "range": { "start-line": 85, "end-line": 89 }
       },
       "references": [
-        { "path": "microsoft/knowledge/security/use-secrettext-for-credentials.md" }
+        { "path": "microsoft/knowledge/security/secrettext-for-credentials.md" }
       ],
       "confidence": "high",
       "from-sub-skill": "al-security-review"
     },
     {
-      "id": "microsoft/knowledge/security/never-hardcode-secrets-in-al.md",
+      "id": "microsoft/knowledge/security/secrets-isolated-storage.md",
       "severity": "minor",
-      "message": "An API key is assigned from a string literal rather than retrieved from IsolatedStorage or Key Vault at runtime.",
+      "message": "A setup table stores an API key in an ordinary Text field, exposing it through table reads and exports. Persist it in IsolatedStorage instead.",
       "location": {
-        "file": "src/Integration/ApiClient.Codeunit.al",
-        "line": 201
+        "file": "src/Integration/ExternalServiceSetup.Table.al",
+        "line": 12
       },
       "references": [
-        { "path": "microsoft/knowledge/security/never-hardcode-secrets-in-al.md" }
+        { "path": "microsoft/knowledge/security/secrets-isolated-storage.md" }
       ],
       "confidence": "medium",
       "from-sub-skill": "al-security-review"
@@ -209,29 +213,29 @@ Output conforms to the DO output contract, extended with `sub-results` and `skip
       },
       "findings": [
         {
-          "id": "microsoft/knowledge/performance/filter-before-find.md",
+          "id": "microsoft/knowledge/performance/apply-filters-before-iterating.md",
           "severity": "major",
-          "message": "FindSet is called on a record variable without any prior SetRange/SetFilter. This forces a full-table scan.",
+          "message": "The Country/Region Code predicate is evaluated inside the loop instead of with SetRange before FindSet, so every row crosses the database boundary.",
           "location": {
             "file": "src/Sales/PostingRoutines.Codeunit.al",
             "line": 140,
             "range": { "start-line": 140, "end-line": 144 }
           },
           "references": [
-            { "path": "microsoft/knowledge/performance/filter-before-find.md" }
+            { "path": "microsoft/knowledge/performance/apply-filters-before-iterating.md" }
           ],
           "confidence": "high"
         },
         {
-          "id": "community/knowledge/performance/call-setloadfields-before-filters.md",
+          "id": "microsoft/knowledge/performance/use-setloadfields-for-partial-records.md",
           "severity": "minor",
-          "message": "SetLoadFields is called after SetRange. Per the referenced guidance the call must come before filters to be folded into the query plan.",
+          "message": "The loop reads only a small subset of fields from a wide table without SetLoadFields, transferring every column for each row.",
           "location": {
             "file": "src/Sales/PostingRoutines.Codeunit.al",
             "line": 152
           },
           "references": [
-            { "path": "community/knowledge/performance/call-setloadfields-before-filters.md" }
+            { "path": "microsoft/knowledge/performance/use-setloadfields-for-partial-records.md" }
           ],
           "confidence": "high"
         }
@@ -247,7 +251,7 @@ Output conforms to the DO output contract, extended with `sub-results` and `skip
       },
       "findings": [
         {
-          "id": "microsoft/knowledge/security/use-secrettext-for-credentials.md",
+          "id": "microsoft/knowledge/security/secrettext-for-credentials.md",
           "severity": "blocker",
           "message": "A bearer token is declared as a Text parameter and passed through the HTTP request path as plain text. The referenced guidance requires credentials to flow as SecretText end-to-end.",
           "location": {
@@ -256,20 +260,20 @@ Output conforms to the DO output contract, extended with `sub-results` and `skip
             "range": { "start-line": 85, "end-line": 89 }
           },
           "references": [
-            { "path": "microsoft/knowledge/security/use-secrettext-for-credentials.md" }
+            { "path": "microsoft/knowledge/security/secrettext-for-credentials.md" }
           ],
           "confidence": "high"
         },
         {
-          "id": "microsoft/knowledge/security/never-hardcode-secrets-in-al.md",
+          "id": "microsoft/knowledge/security/secrets-isolated-storage.md",
           "severity": "minor",
-          "message": "An API key is assigned from a string literal rather than retrieved from IsolatedStorage or Key Vault at runtime.",
+          "message": "A setup table stores an API key in an ordinary Text field, exposing it through table reads and exports. Persist it in IsolatedStorage instead.",
           "location": {
-            "file": "src/Integration/ApiClient.Codeunit.al",
-            "line": 201
+            "file": "src/Integration/ExternalServiceSetup.Table.al",
+            "line": 12
           },
           "references": [
-            { "path": "microsoft/knowledge/security/never-hardcode-secrets-in-al.md" }
+            { "path": "microsoft/knowledge/security/secrets-isolated-storage.md" }
           ],
           "confidence": "medium"
         }
@@ -310,4 +314,3 @@ The empty-corpus case — BCQuality's state until knowledge files land — rolls
   ]
 }
 ```
-
