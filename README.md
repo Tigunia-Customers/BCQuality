@@ -18,6 +18,8 @@ Poor fit: "Use HTTPS instead of HTTP." "Don't hardcode secrets." "Keep transacti
 
 The practical consequence: when a code-review agent flags something it shouldn't have, or misses something it should have caught, the remedy is a new knowledge file. When it already behaves correctly on a topic, no file is needed.
 
+A file that *prevents* a false positive — documenting why a pattern is legitimate so the agent stops flagging it — is as valid as one that catches a defect: negative clarifications are first-class knowledge files. What never belongs is a BC fact hard-coded into a skill. Skills are finders and appliers; knowledge files are what the agent knows. See [`skills/do.md`](skills/do.md) and [`skills/write.md`](skills/write.md).
+
 ## What's in this repo
 
 BCQuality contains **knowledge** and **skills**. It does not contain agents. Agents that consume BCQuality ship with [AL-Go](https://github.com/microsoft/AL-Go) and other orchestrators.
@@ -88,18 +90,9 @@ Code examples belong in separate files, not in the knowledge file itself. Knowle
 
 ## Scope
 
-BCQuality covers Business Central broadly — the application domains it supports, the technologies used to extend it, and the practices that keep implementations healthy. The scope includes:
+The current curated corpus is focused on **technical AL code review**: AppSource and compatibility, data modeling, error handling, events, interfaces, performance, privacy, Query objects, security, style, telemetry, testing, UI, upgrade, and web services. These are the domains backed by knowledge files and registered review leaves today.
 
-- **Business Central domains** — Finance, Supply Chain Management, Manufacturing, Jobs, Warehousing, Service, and the many other functional areas BC covers. Domain knowledge helps agents understand the business context they are working in.
-- AL language patterns and anti-patterns
-- PowerShell scripting for BC
-- Pipelines (AL-Go, GitHub Actions)
-- Business Central APIs
-- Power Platform integration
-- Telemetry and KQL
-- AppSource lifecycle
-
-A BC developer's actual job spans all of this, and BCQuality reflects that.
+Business Central functional domains (Finance, Supply Chain Management, Manufacturing, Jobs, Warehousing, Service), PowerShell, pipelines, and Power Platform remain valid future repository scope, but they are **not current coverage claims** until corresponding knowledge and action skills exist. Consumers should derive supported review scope from the live knowledge index and dispatched skills, not from roadmap breadth.
 
 ## How agents consume BCQuality
 
@@ -122,6 +115,7 @@ For the end-to-end flow — from orchestrator trigger through to how output reac
 
 ```
 ├── /skills/              # Global: entry-point skill + meta-skill contracts (READ, DO, WRITE)
+├── /evaluation/          # Neutral good/bad review fixtures and scoring contract
 ├── /.github/             # Actions and workflows
 ├── /microsoft/           # Microsoft-endorsed layer
 │   ├── /knowledge/       # Knowledge files by domain
@@ -155,8 +149,11 @@ Contributions are welcome. Before submitting a PR:
 1. Read the knowledge file format above — frontmatter and sections are validated by CI.
 2. Keep files atomic: one concern per file, under 100 lines.
 3. Target your contribution to the right layer — most community contributions go in `/community/knowledge/`.
+4. Adding a BC fact — or stopping the agent from flagging a false positive — is a knowledge file, not a skill edit. If a PR changes *what* a review skill flags, the change almost certainly belongs in a knowledge file. See [`skills/write.md`](skills/write.md).
 
 CI runs validation on every PR. If your knowledge file has schema violations, missing sections, code blocks, or exceeds 100 lines, the check will fail with a clear error message.
+
+Companion samples must be referenced by filename from their article, and every referenced sample must exist. The review evaluation corpus under [`evaluation/`](evaluation/) adds one positive and one clean control for every registered AL review leaf; see [`evaluation/README.md`](evaluation/README.md) for credential-free validation and optional fast-model scoring.
 
 ## License
 

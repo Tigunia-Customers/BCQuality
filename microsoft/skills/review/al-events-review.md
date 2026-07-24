@@ -72,7 +72,7 @@ For each worklist entry, evaluate the diff against the file's `## Best Practice`
 
 - When the diff contains a clear match for an Anti Pattern, emit a finding with severity `major` or `blocker`, a message summarizing the anti-pattern, `location` pointing to the offending line or range, and a `references` entry pointing to the knowledge file. Use `blocker` only when the knowledge file states the anti-pattern violates a platform-level guarantee. When the file does not make such a claim, the ceiling is `major`.
 - When the diff contains code that contradicts a Best Practice without being a full anti-pattern, emit `minor` with the same reference shape.
-- When the skill cannot detect a violation but the file is clearly applicable to the change, emit `info` citing the file. Repository-wide observations MAY omit `location`.
+- Applicability alone is not a finding. Emit `info` only for a concrete, non-actionable observation the article explicitly defines; otherwise emit nothing when no violation is present.
 
 Set `confidence` to:
 
@@ -96,7 +96,7 @@ Outcome selection:
 
 ## Output
 
-Output conforms to the DO output contract. A populated example:
+Output conforms to the DO output contract. Every finding this skill emits MUST set `findings[].domain` to `"Events"`. A populated example:
 
 ```json
 {
@@ -119,7 +119,8 @@ Output conforms to the DO output contract. A populated example:
       "references": [
         { "path": "microsoft/knowledge/events/publish-thin-onbefore-onafter-integration-events.md" }
       ],
-      "confidence": "high"
+      "confidence": "high",
+      "domain": "Events"
     },
     {
       "id": "microsoft/knowledge/events/use-ishandled-to-make-base-behaviour-overridable.md",
@@ -132,7 +133,8 @@ Output conforms to the DO output contract. A populated example:
       "references": [
         { "path": "microsoft/knowledge/events/use-ishandled-to-make-base-behaviour-overridable.md" }
       ],
-      "confidence": "high"
+      "confidence": "high",
+      "domain": "Events"
     }
   ],
   "suppressed": []
