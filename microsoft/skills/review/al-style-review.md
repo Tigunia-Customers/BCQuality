@@ -45,6 +45,13 @@ Narrow the relevant files to the subset that applies to the changes under review
 
 A file enters the candidate worklist when its `keywords` intersect the extracted tokens or its topic (derived from the index entry's `path`, `title`, and `description`) matches a changed object or declaration. Read an article's full file — its `## Best Practice` / `## Anti Pattern` bodies — only after it makes the worklist; candidate selection uses the index alone.
 
+Do not worklist `temporary-variable-temp-prefix.md` for an event publisher parameter. `events/prefix-temporary-record-event-parameters-with-temp.md` is the exclusive owner of that shape.
+
+Apply these high-signal mappings before fuzzy topic ranking:
+
+- A `Label` or `TextConst` contains multiple or ambiguous placeholders but has no `Comment`, or its Comment does not explain every placeholder — `label-comment-explains-placeholders.md`. A single placeholder whose meaning is explicit in the text, such as `Customer %1`, is allowed without a Comment and must not be flagged.
+- `function-call-parentheses-required.md` applies only to a zero-argument invocation written without `()`. Never worklist it from an invocation that already has parentheses or supplies arguments, including `Error(Label, Arg1, Arg2)`.
+
 Once the candidate worklist is known, resolve layer-precedence conflicts per READ and record suppressions.
 
 When the post-conflict worklist is empty because no applicable style knowledge exists, or because configuration suppressed every candidate, emit `outcome: "no-knowledge"`. When the worklist is empty because no applicable style knowledge matched the changes, emit `outcome: "completed"` with an empty `findings` array.
@@ -53,7 +60,7 @@ When the post-conflict worklist is empty because no applicable style knowledge e
 
 For each worklist entry, evaluate the diff against the file's `## Best Practice` and `## Anti Pattern` sections. Style findings rarely reach `blocker` — reserve it for cases where the knowledge file documents a platform-level requirement (for example, API page property constraints the OData runtime rejects). Most style findings are `minor` or `info`; egregious misuse (`Error` with pre-built Text losing translation and telemetry classification) may reach `major`.
 
-Severity calibration — a formal analyzer already flags the mechanical presence/naming conventions (the `this` keyword AA0248, approved label suffixes AA0074, a missing `ToolTip`, required parentheses). On those, BCQuality's value is the *explanation* of why the rule exists, not a second gate; emit them at `info` so a consumer that gates on severity does not re-flag what CodeCop/AppSourceCop already reports. Reserve `minor` for style issues with concrete downstream impact the analyzer does not catch — a `Label` declared at procedure-local instead of object scope (no analyzer enforces label scope, and mis-scoped Labels are fragile in the translation pipeline), lost translation or telemetry classification from a string-built `Error`, an `OptionCaption` that does not match its `OptionMembers`, a misleading named invocation. This keeps the domain's default output advisory and prevents analyzer-redundant noise from competing with substantive review.
+Severity calibration — a formal analyzer already flags the mechanical presence/naming conventions (the `this` keyword AA0248, approved label suffixes AA0074, variable-declaration order by type AA0021, a missing `ToolTip`, required parentheses). On those, BCQuality's value is the *explanation* of why the rule exists, not a second gate; emit them at `info` so a consumer that gates on severity does not re-flag what CodeCop/AppSourceCop already reports. Reserve `minor` for style issues with concrete downstream impact the analyzer does not catch — a `Label` declared at procedure-local instead of object scope (no analyzer enforces label scope, and mis-scoped Labels are fragile in the translation pipeline), lost translation or telemetry classification from a string-built `Error`, an `OptionCaption` that does not match its `OptionMembers`, a misleading named invocation. This keeps the domain's default output advisory and prevents analyzer-redundant noise from competing with substantive review.
 
 Set `confidence` to:
 
@@ -77,7 +84,7 @@ Outcome selection:
 
 ## Output
 
-Output conforms to the DO output contract. A populated example:
+Output conforms to the DO output contract. Every finding this skill emits MUST set `findings[].domain` to `"Style"`. A populated example:
 
 ```json
 {
@@ -99,7 +106,8 @@ Output conforms to the DO output contract. A populated example:
       "references": [
         { "path": "microsoft/knowledge/style/label-suffix-approved-list.md" }
       ],
-      "confidence": "high"
+      "confidence": "high",
+      "domain": "Style"
     }
   ],
   "suppressed": []
