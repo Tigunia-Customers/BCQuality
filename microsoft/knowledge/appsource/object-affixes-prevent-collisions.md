@@ -1,7 +1,7 @@
 ---
 bc-version: [all]
 domain: appsource
-keywords: [object-affix, prefix, suffix, as0011, appsourcecop, collision, tableextension]
+keywords: [object-affix, prefix, suffix, as0011, appsourcecop, collision, tableextension, first-party, isv]
 technologies: [al]
 countries: [w1]
 application-area: [all]
@@ -15,14 +15,16 @@ An AppSource extension must prevent name collisions through its registered affix
 
 AppSourceCop enforces this. The primary rule is AS0011 ("An affix is required"); the affixes are configured through `mandatoryAffixes` (and `mandatoryPrefix`) in `AppSourceCop.json`. Two placements matter and are easy to get half-right: an object you define carries the affix at **object-name** level, while a member you add to a **standard** object carries the affix on that **member's** name. Adding an affixed object is not enough — an unaffixed field bolted onto `Customer` still collides and still fails validation.
 
+This rule scopes to Marketplace ISV extensions, which is what AppSourceCop validates. A first-party Microsoft in-box module (publisher `Microsoft`, an object range reserved for first-party use, and no `AppSourceCop.json`/`mandatoryAffixes` in the app) is not built or shipped as an Marketplace extension and is not subject to AS0011, so an unaffixed action or field it adds to a base-application page is not a collision risk to flag. Renaming an existing shipped first-party member to add an affix is itself a breaking change to that module's own history and is not required by this rule.
+
 ## Best Practice
 
 Own objects use the registered affix (for example `ABC Loyalty Tier`) or, when targeting BC23 or later, a qualifying namespace. Every field or action added to a standard object remains individually affixed (for example `Loyalty Points ABC` on a `Customer` tableextension).
 
-See sample: `object-affixes-prevent-collisions.good.al`.
+See sample: [`object-affixes-prevent-collisions.good.al`](object-affixes-prevent-collisions.good.al).
 
 ## Anti Pattern
 
 An owned object with neither a qualifying namespace nor an affix, an unaffixed extension member, or the common half-measure where the extension object carries the affix but a field it adds to a standard table does not. AS0011 flags the missing collision protection and the field can still collide with another app.
 
-See sample: `object-affixes-prevent-collisions.bad.al`.
+See sample: [`object-affixes-prevent-collisions.bad.al`](object-affixes-prevent-collisions.bad.al).
